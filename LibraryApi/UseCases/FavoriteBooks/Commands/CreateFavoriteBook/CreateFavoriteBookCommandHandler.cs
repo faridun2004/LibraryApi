@@ -19,19 +19,15 @@ namespace LibraryApi.UseCases.FavoriteBooks.Commands.CreateFavoriteBook
             if (request is null)
                 throw new ArgumentNullException(nameof(request));
 
-            var data = await (
-                from user in _context.Users
-                where user.Id == request.UserId
-                from book in _context.Books
-                where book.Id == request.BookId
-                select new
-                {
-                    UserId = user.Id,
-                    BookId = book.Id
-                }
-            ).FirstOrDefaultAsync(cancellationToken);
+            var userExists = await _context.Users
+                .AsNoTracking()
+                .AnyAsync(u => u.Id == request.UserId, cancellationToken);
 
-            if (data == null)
+            var bookExists = await _context.Books
+                .AsNoTracking()
+                .AnyAsync(b => b.Id == request.BookId, cancellationToken);
+
+            if (!userExists || !bookExists)
                 throw new InvalidOperationException("Пользователь или книга не найдены.");
 
             var alreadyFavorite = await _context.FavoriteBooks
@@ -52,5 +48,6 @@ namespace LibraryApi.UseCases.FavoriteBooks.Commands.CreateFavoriteBook
 
             return favoriteBook.Id;
         }
+
     }
 }

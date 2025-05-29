@@ -119,7 +119,7 @@ namespace LibraryApi.Migrations
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "numeric(18,2)");
-
+            
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
                 table: "Books",
